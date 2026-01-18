@@ -1,0 +1,108 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+// 仅在当前页面构建阶段执行
+const allPosts = await Astro.glob("../posts/*.md");
+
+// 统计标签频率
+const tagCountMap: Record<string, number> = {};
+
+for (const post of allPosts) {
+  for (const tag of post.frontmatter.tags ?? []) {
+    tagCountMap[tag] = (tagCountMap[tag] ?? 0) + 1;
+  }
+}
+
+// 转为数组
+const tags = Object.entries(tagCountMap).map(([name, count]) => ({
+  name,
+  count,
+}));
+
+// 按频率排序（可选，更符合直觉）
+tags.sort((a, b) => b.count - a.count);
+
+// 频率区间划分
+const maxCount = Math.max(...tags.map((t) => t.count));
+
+function getStyleByCount(count: number) {
+  // 频率等级（0~4）
+  let level = 0;
+  if (count >= maxCount * 0.8) level = 4;
+  else if (count >= maxCount * 0.6) level = 3;
+  else if (count >= maxCount * 0.4) level = 2;
+  else if (count >= maxCount * 0.2) level = 1;
+
+  // 从红 → 橙 → 黄 → 绿 → 蓝紫（可视光谱方向）
+  const styles = [
+    { size: 0.95, hue: 20 }, // 红外附近
+    { size: 1.05, hue: 45 }, // 橙
+    { size: 1.2, hue: 90 }, // 绿
+    { size: 1.4, hue: 160 }, // 青
+    { size: 1.65, hue: 260 }, // 紫外附近
+  ];
+
+  const { size, hue } = styles[level];
+
+  return {
+    fontSize: `${size}em`,
+    background: `hsl(${hue}, 70%, 92%)`,
+    color: `hsl(${hue}, 60%, 30%)`,
+    border: `1px solid hsl(${hue}, 50%, 75%)`,
+  };
+}
+
+const pageTitle = "标签索引";
+---
+
+<BaseLayout pageTitle={pageTitle}>
+  <div class="tags">
+    {
+      tags.map(({ name, count }) => {
+        const style = getStyleByCount(count);
+        return (
+          <a
+            class="tag"
+            href={`/tags/${name}`}
+            style={`
+              font-size: ${style.fontSize};
+              background: ${style.background};
+              color: ${style.color};
+              border: ${style.border};
+            `}
+          >
+            {name}
+          </a>
+        );
+      })
+    }
+  </div>
+</BaseLayout>
+
+<style>
+  /* 仅作用于当前页面 */
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75em;
+  }
+
+  .tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5em 1.15em;
+    border-radius: 999px;
+    text-decoration: none; /* 无下划线 */
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    transition:
+      transform 0.2s ease,
+      box-shadow 0.2s ease,
+      background-color 0.2s ease;
+  }
+
+  .tag:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+  }
+</style>

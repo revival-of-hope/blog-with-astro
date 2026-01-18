@@ -1,13 +1,19 @@
 ---
-import BlogList from "../layouts/BlogList.astro";
-const pageTitle = "My World";
+import BaseLayout from "../layouts/BaseLayout.astro";
+import BlogPost from "../components/BlogPost.astro";
+const allPosts = Object.values(
+  import.meta.glob("../pages/posts/*.md", { eager: true })
+);
+const pageTitle = "我的 Astro 学习博客";
 ---
 
-<BlogList pageTitle={pageTitle}>
-  <p>这是我的blogs</p>
+<BaseLayout pageTitle={pageTitle}>
+  <p>在这里，我将分享我的学习 Astro 的之旅。</p>
   <ul>
-    <li><a href="/posts/hello-world/">文章 1</a></li>
-    <li><a href="/posts/post-2/">文章 2</a></li>
-    <li><a href="/posts/post-3/">文章 3</a></li>
+    {
+      allPosts.map((post: any) => (
+        <BlogPost url={post.url} title={post.frontmatter.title} />
+      ))
+    }
   </ul>
-</BlogList>
+</BaseLayout>

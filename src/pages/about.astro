@@ -1,44 +1,58 @@
 ---
-import AboutMe from "../layouts/AboutMe.astro";
+import BaseLayout from "../layouts/BaseLayout.astro";
+
 const pageTitle = "关于我";
+
 const identity = {
   firstName: "莎拉",
   country: "加拿大",
   occupation: "技术撰稿人",
   hobbies: ["摄影", "观鸟", "棒球"],
 };
+
 const skills = ["HTML", "CSS", "JavaScript", "React", "Astro", "Writing Docs"];
+
 const happy = true;
 const finished = false;
 const goal = 3;
 ---
 
-<AboutMe pageTitle={pageTitle}>
-  <h1>{pageTitle}</h1>
-  <p>I am learning astro to understand blogs better</p>
+<BaseLayout pageTitle={pageTitle}>
+  <p>I am learning Astro to understand blogs better.</p>
+
   <p>以下是关于我的几个事实：</p>
+
   <ul>
-    <li>我的名字是{identity.firstName}.</li>
-    <li>我住在{identity.country}。我的职业是{identity.occupation}。</li>
+    <li>我的名字是 {identity.firstName}。</li>
+    <li>
+      我住在 {identity.country}，我的职业是 {identity.occupation}。
+    </li>
+
     {
       identity.hobbies.length >= 2 && (
         <li>
-          我的两个习惯：{identity.hobbies[0]}和{identity.hobbies[1]}
+          我的两个爱好：{identity.hobbies[0]} 和 {identity.hobbies[1]}
         </li>
       )
     }
   </ul>
+
   <p>我的技能是：</p>
+
   <ul>
     {skills.map((skill) => <li class="skill">{skill}</li>)}
   </ul>
+
   {happy && <p>我非常乐意学习 Astro！</p>}
 
   {finished && <p>我完成了这节教程！</p>}
 
   {goal === 3 ? <p>我的目标是在三天内完成。</p> : <p>我的目标不是 3 天。</p>}
-</AboutMe>
+</BaseLayout>
+
 <style>
+  /* 仅作用于当前页面（Astro 默认作用域） */
+
   ul {
     padding-left: 1.2rem;
     margin: 1rem 0;

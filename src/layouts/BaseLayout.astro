@@ -24,3 +24,21 @@ const { pageTitle, subTitle } = Astro.props;
     </script>
   </body>
 </html>
+<style>
+  /* 1️⃣ body 作为定位容器 */
+  body {
+    position: relative;
+    min-height: 100vh;
+  }
+
+  /* 2️⃣ 背景层 */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+
+    filter: blur(0.5rem); /* 模糊度 */
+    transform: scale(1.05); /* 防止边缘露白 */
+  }
+</style>
